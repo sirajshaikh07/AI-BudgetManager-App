@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Budget Pro — AI Finance Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --surface3: #22223a;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --accent3: #22d3ee;
+    --green: #34d399;
+    --red: #f87171;
+    --amber: #fbbf24;
+    --text: #f1f0ff;
+    --text2: rgba(241,240,255,0.55);
+    --text3: rgba(241,240,255,0.28);
+    --glow: rgba(108,99,255,0.15);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Phone shell */
+  .phone-shell {
+    width: 390px;
+    height: 844px;
+    background: var(--bg);
+    border-radius: 48px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  /* Desktop layout */
+  .desktop {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    padding: 32px;
+    max-width: 1280px;
+    width: 100%;
+  }
+
+  .side-info {
+    flex: 1;
+    color: var(--text);
+    padding-top: 60px;
+  }
+
+  .side-info .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6c63ff, #a78bfa, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .side-info .tagline {
+    color: var(--text2);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 320px;
+  }
+
+  .feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .feature-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--surface2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+
+  .feature-text strong {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    display: block;
+    color: var(--text);
+  }
+
+  .feature-text span {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+
+  .tech-stack {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tech-badge {
+    padding: 4px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Screen */
+  .screen {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .screen.active {
+    display: flex;
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .status-time { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; }
+  .status-icons { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+
+  /* Scrollable content */
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .scroll-content::-webkit-scrollbar { display: none; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    background: rgba(18,18,26,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 12px 0 24px;
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 18px;
+    transition: all 0.2s;
+  }
+
+  .nav-item.active .nav-icon {
+    background: var(--accent);
+    box-shadow: 0 4px 16px rgba(108,99,255,0.4);
+  }
+
+  .nav-label {
+    font-size: 10px;
+    color: var(--text3);
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .nav-item.active .nav-label { color: var(--accent2); }
+
+  /* ===== HOME SCREEN ===== */
+  .home-header {
+    padding: 0 20px 16px;
+  }
+
+  .greeting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .greeting-text small {
+    font-size: 12px;
+    color: var(--text3);
+    font-weight: 400;
+  }
+
+  .greeting-text h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .avatar-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.4);
+  }
+
+  /* Balance card */
+  .balance-card {
+    margin: 0 20px 20px;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(108,99,255,0.3);
+    box-shadow: 0 8px 32px rgba(108,99,255,0.2);
+  }
+
+  .balance-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 140px;
+    height: 140px;
+    background: radial-gradient(circle, rgba(167,139,250,0.2) 0%, transparent 70%);
+  }
+
+  .balance-card::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 30px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(34,211,238,0.15) 0%, transparent 70%);
+  }
+
+  .balance-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 500;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .balance-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+  }
+
+  .balance-amount .currency { font-size: 22px; opacity: 0.7; vertical-align: top; margin-top: 6px; display: inline-block; }
+
+  .balance-stats {
+    display: flex;
+    gap: 0;
+  }
+
+  .stat-item {
+    flex: 1;
+    position: relative;
+  }
+
+  .stat-item + .stat-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  .stat-item:first-child { padding-right: 16px; }
+  .stat-item:last-child { padding-left: 16px; }
+
+  .stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .stat-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* Quick actions */
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 0 20px;
+    margin-bottom: 12px;
+  }
+
+  .quick-actions {
+    display: flex;
+    gap: 10px;
+    padding: 0 20px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .quick-actions::-webkit-scrollbar { display: none; }
+
+  .qa-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 72px;
+    transition: transform 0.2s;
+  }
+
+  .qa-btn:active { transform: scale(0.95); }
+
+  .qa-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border: 1px solid var(--border2);
+    transition: all 0.2s;
+  }
+
+  .qa-btn:hover .qa-icon {
+    border-color: var(--accent);
+    box-shadow: 0 4px 16px rgba(108,99,255,0.25);
+  }
+
+  .qa-label {
+    font-size: 10px;
+    color: var(--text2);
+    text-align: center;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  /* AI Nudge */
+  .ai-nudge {
+    margin: 0 20px 20px;
+    background: linear-gradient(135deg, rgba(34,211,238,0.08) 0%, rgba(108,99,255,0.08) 100%);
+    border: 1px solid rgba(34,211,238,0.2);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .ai-nudge:hover {
+    background: linear-gradient(135deg, rgba(34,211,238,0.12) 0%, rgba(108,99,255,0.12) 100%);
+  }
+
+  .nudge-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(108,99,255,0.2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .nudge-content small {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent3);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .nudge-content p {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.4;
+    margin-top: 2px;
+  }
+
+  /* Budget overview */
+  .budget-section {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  .budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .budget-card {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .budget-card:hover { border-color: var(--border2); }
+
+  .budget-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .budget-cat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cat-emoji {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .cat-name {
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .budget-amounts {
+    text-align: right;
+  }
+
+  .spent-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .limit-amount {
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  /* Recent transactions */
+  .txn-section {
+    padding: 0 20px 20px;
+  }
+
+  .txn-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .txn-item:last-child { border-bottom: none; }
+
+  .txn-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .txn-info { flex: 1; min-width: 0; }
+
+  .txn-name {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .txn-meta {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  .txn-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .txn-account {
+    font-size: 10px;
+    color: var(--text3);
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  /* ===== AI CHAT SCREEN ===== */
+  .chat-header {
+    padding: 0 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .chat-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.35);
+  }
+
+  .online-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+
+  .chat-info h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .chat-info small {
+    font-size: 11px;
+    color: var(--green);
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 20px;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .chat-messages::-webkit-scrollbar { display: none; }
+
+  .msg {
+    max-width: 85%;
+    animation: msgIn 0.3s ease;
+  }
+
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { align-self: flex-end; }
+  .msg.ai { align-self: flex-start; }
+
+  .msg-bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .msg.user .msg-bubble {
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg.ai .msg-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-time {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 4px;
+    padding: 0 4px;
+  }
+
+  .msg.user .msg-time { text-align: right; }
+
+  .ai-data-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 8px;
+    margin-left: 0;
+  }
+
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+
+  .data-row span:first-child { color: var(--text2); }
+  .data-row span:last-child { font-family: 'DM Mono', monospace; font-weight: 500; }
+
+  .suggest-chips {
+    display: flex;
+    gap: 8px;
+    padding: 8px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .suggest-chips::-webkit-scrollbar { display: none; }
+
+  .chip {
+    padding: 8px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text2);
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .chip:hover {
+    background: var(--surface3);
+    color: var(--text);
+    border-color: var(--accent);
+  }
+
+  .chat-input-row {
+    padding: 12px 20px 8px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 10px 16px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    resize: none;
+    min-height: 40px;
+    max-height: 80px;
+    transition: border-color 0.2s;
+  }
+
+  .chat-input:focus { border-color: var(--accent); }
+  .chat-input::placeholder { color: var(--text3); }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.4);
+    flex-shrink: 0;
+  }
+
+  .send-btn:active { transform: scale(0.9); }
+
+  /* ===== TRANSACTIONS SCREEN ===== */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .filter-chip {
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .filter-chip.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 12px rgba(108,99,255,0.35);
+  }
+
+  .filter-chip:not(.active) {
+    background: var(--surface2);
+    color: var(--text2);
+    border-color: var(--border);
+  }
+
+  .txn-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0 8px;
+    margin: 8px 0 4px;
+  }
+
+  .txn-group-date {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .txn-group-total {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ===== ANALYTICS SCREEN ===== */
+  .analytics-tabs {
+    display: flex;
+    margin: 0 20px 20px;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    color: var(--text2);
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 2px 8px rgba(108,99,255,0.35);
+  }
+
+  .chart-container {
+    margin: 0 20px 20px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .chart-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .chart-subtitle {
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 20px;
+  }
+
+  /* Simple bar chart */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 100px;
+    margin-bottom: 8px;
+  }
+
+  .bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .bar-pair {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 100px;
+    width: 100%;
+  }
+
+  .bar {
+    flex: 1;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.6s ease;
+    min-height: 4px;
+  }
+
+  .bar.income { background: linear-gradient(to top, var(--green), rgba(52,211,153,0.6)); }
+  .bar.expense { background: linear-gradient(to top, var(--accent), rgba(108,99,255,0.6)); }
+
+  .bar-label {
+    font-size: 9px;
+    color: var(--text3);
+    text-align: center;
+  }
+
+  .chart-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* Donut chart */
+  .donut-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .donut-svg-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .donut-center-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .donut-center-label {
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  .donut-legend {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .donut-legend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .donut-legend-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .donut-legend-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  .donut-legend-amount {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+  }
+
+  .donut-legend-pct {
+    font-size: 10px;
+    color: var(--text3);
+    margin-left: 4px;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: flex;
+    gap: 10px;
+    margin: 0 20px 16px;
+  }
+
+  .stat-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+  }
+
+  .stat-card-label {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+
+  .stat-card-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .stat-card-sub {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* Accounts screen */
+  .account-card {
+    margin: 0 20px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .account-card:hover { border-color: var(--border2); }
+
+  .account-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .account-details { flex: 1; }
+
+  .account-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .account-type {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .account-balance {
+    text-align: right;
+  }
+
+  .account-balance-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .account-balance-label {
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  /* FAB */
+  .fab {
+    position: absolute;
+    bottom: 84px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(108,99,255,0.5);
+    z-index: 10;
+    transition: transform 0.2s;
+  }
+
+  .fab:hover { transform: scale(1.05); }
+  .fab:active { transform: scale(0.95); }
+
+  /* Add transaction modal */
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 20;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal-sheet {
+    background: var(--surface);
+    border-radius: 28px 28px 0 0;
+    padding: 24px 20px 40px;
+    border-top: 1px solid var(--border2);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .type-toggle {
+    display: flex;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+
+  .type-btn {
+    flex: 1;
+    padding: 9px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    color: var(--text2);
+  }
+
+  .type-btn.income.active { background: var(--green); color: #0a0a0f; }
+  .type-btn.expense.active { background: var(--red); color: #0a0a0f; }
+
+  .amount-input-wrap {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .amount-currency {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    color: var(--text2);
+  }
+
+  .amount-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    outline: none;
+    width: 100%;
+  }
+
+  .form-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus { border-color: var(--accent); }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .primary-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.35);
+  }
+
+  .primary-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(108,99,255,0.45); }
+
+  /* Link text */
+  .link-text {
+    font-size: 12px;
+    color: var(--accent2);
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  /* Screen header generic */
+  .screen-header {
+    padding: 0 20px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .screen-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .icon-btn:hover { border-color: var(--accent); }
+
+  /* Recurring items */
+  .recurring-card {
+    margin: 0 20px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .recurring-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .recurring-info { flex: 1; }
+  .recurring-name { font-size: 14px; font-weight: 500; }
+  .recurring-freq { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .recurring-amount { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+  .recurring-next { font-size: 10px; color: var(--text3); text-align: right; margin-top: 2px; }
+
+  /* Typing animation */
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 10px 14px;
+  }
+
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+    animation: typingBounce 1.2s infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typingBounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+    40% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .desktop { flex-direction: column; align-items: center; padding: 20px; }
+    .side-info { display: none; }
+    body { align-items: flex-start; }
+  }
+
+  @media (max-width: 420px) {
+    .phone-shell { width: 100vw; height: 100vh; border-radius: 0; border: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="desktop">
+  <!-- Side info -->
+  <div class="side-info">
+    <div class="logo">Budget Pro</div>
+    <p class="tagline">Your AI-powered personal finance manager. Track, budget, and chat with your money data in real-time.</p>
+
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">🏦</div>
+        <div class="feature-text">
+          <strong>Multi-Account Support</strong>
+          <span>Cash, Bank, UPI, Credit Cards — all in one place with real-time sync</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-text">
+          <strong>RAG-Powered AI Assistant</strong>
+          <span>Ask questions over your own data. Powered by Anthropic Claude</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div class="feature-text">
+          <strong>Smart Analytics</strong>
+          <span>Category charts, trend analysis, 3-month rolling averages</span>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔔</div>
+        <div class="feature-text">
+          <strong>Proactive Nudges</strong>
+          <span>AI alerts before you overspend, not after</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-stack">
+      <span class="tech-badge">React Native</span>
+      <span class="tech-badge">Node.js</span>
+      <span class="tech-badge">Anthropic API</span>
+      <span class="tech-badge">pgvector RAG</span>
+      <span class="tech-badge">PostgreSQL</span>
+      <span class="tech-badge">Redis</span>
+    </div>
+  </div>
+
+  <!-- Phone -->
+  <div class="phone-shell">
+    <!-- HOME SCREEN -->
+    <div class="screen active" id="screen-home">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <span>▲▲▲</span>
+          <span>🔋</span>
+        </div>
+      </div>
+
+      <div class="scroll-content">
+        <div class="home-header">
+          <div class="greeting-row">
+            <div class="greeting-text">
+              <small>Good morning,</small>
+              <h2>Arjun 👋</h2>
+            </div>
+            <div class="avatar-btn">🧑</div>
+          </div>
+        </div>
+
+        <!-- Balance card -->
+        <div class="balance-card">
+          <div class="balance-label">Total Balance</div>
+          <div class="balance-amount"><span class="currency">₹</span>82,340<span style="font-size:24px">.50</span></div>
+          <div class="balance-stats">
+            <div class="stat-item">
+              <div class="stat-label"><span class="stat-dot" style="background:var(--green)"></span>Income</div>
+              <div class="stat-value" style="color:var(--green)">₹62,000</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label"><span class="stat-dot" style="background:var(--red)"></span>Expenses</div>
+              <div class="stat-value" style="color:var(--red)">₹28,450</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="section-label">Quick Actions</div>
+        <div class="quick-actions">
+          <div class="qa-btn" onclick="openModal()">
+            <div class="qa-icon" style="background:rgba(108,99,255,0.15)">➕</div>
+            <div class="qa-label">Add Txn</div>
+          </div>
+          <div class="qa-btn" onclick="switchTab('chat')">
+            <div class="qa-icon" style="background:rgba(34,211,238,0.12)">🤖</div>
+            <div class="qa-label">Ask AI</div>
+          </div>
+          <div class="qa-btn" onclick="switchTab('analytics')">
+            <div class="qa-icon" style="background:rgba(251,191,36,0.12)">📊</div>
+            <div class="qa-label">Reports</div>
+          </div>
+          <div class="qa-btn" onclick="switchTab('accounts')">
+            <div class="qa-icon" style="background:rgba(52,211,153,0.12)">🏦</div>
+            <div class="qa-label">Accounts</div>
+          </div>
+          <div class="qa-btn">
+            <div class="qa-icon" style="background:rgba(248,113,113,0.12)">🔁</div>
+            <div class="qa-label">Recurring</div>
+          </div>
+        </div>
+
+        <!-- AI Nudge -->
+        <div class="ai-nudge" onclick="switchTab('chat')">
+          <div class="nudge-icon">🤖</div>
+          <div class="nudge-content">
+            <small>AI Nudge</small>
+            <p>You're 78% of your Food budget by Mar 10. Consider cutting delivery by ₹1,200 this week.</p>
+          </div>
+        </div>
+
+        <!-- Budget overview -->
+        <div class="budget-section">
+          <div class="budget-header">
+            <div class="section-label" style="padding:0; margin:0">Budgets · March</div>
+            <span class="link-text" onclick="switchTab('analytics')">See all →</span>
+          </div>
+
+          <div class="budget-card">
+            <div class="budget-card-top">
+              <div class="budget-cat">
+                <div class="cat-emoji" style="background:rgba(248,113,113,0.15)">🍕</div>
+                <div class="cat-name">Food & Dining</div>
+              </div>
+              <div class="budget-amounts">
+                <div class="spent-amount" style="color:var(--amber)">₹7,800</div>
+                <div class="limit-amount">of ₹10,000</div>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:78%; background:linear-gradient(90deg, var(--amber), #f59e0b)"></div>
+            </div>
+          </div>
+
+          <div class="budget-card">
+            <div class="budget-card-top">
+              <div class="budget-cat">
+                <div class="cat-emoji" style="background:rgba(52,211,153,0.15)">🚇</div>
+                <div class="cat-name">Transport</div>
+              </div>
+              <div class="budget-amounts">
+                <div class="spent-amount" style="color:var(--green)">₹1,200</div>
+                <div class="limit-amount">of ₹3,000</div>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:40%; background:linear-gradient(90deg, var(--green), #059669)"></div>
+            </div>
+          </div>
+
+          <div class="budget-card">
+            <div class="budget-card-top">
+              <div class="budget-cat">
+                <div class="cat-emoji" style="background:rgba(248,113,113,0.15)">🏥</div>
+                <div class="cat-name">Health</div>
+              </div>
+              <div class="budget-amounts">
+                <div class="spent-amount" style="color:var(--red)">₹2,650</div>
+                <div class="limit-amount">of ₹2,500</div>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:100%; background:linear-gradient(90deg, var(--red), #dc2626)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent transactions -->
+        <div class="txn-section">
+          <div class="budget-header">
+            <div class="section-label" style="padding:0; margin:0">Recent</div>
+            <span class="link-text" onclick="switchTab('transactions')">View all →</span>
+          </div>
+
+          <div class="txn-item">
+            <div class="txn-icon" style="background:rgba(248,113,113,0.12)">🍕</div>
+            <div class="txn-info">
+              <div class="txn-name">Zomato Order</div>
+              <div class="txn-meta">Food & Dining · Today, 1:32 PM</div>
+            </div>
+            <div>
+              <div class="txn-amount" style="color:var(--red)">−₹480</div>
+              <div class="txn-account">HDFC</div>
+            </div>
+          </div>
+
+          <div class="txn-item">
+            <div class="txn-icon" style="background:rgba(52,211,153,0.12)">💰</div>
+            <div class="txn-info">
+              <div class="txn-name">Salary — TechCorp</div>
+              <div class="txn-meta">Income · Mar 1, 9:00 AM</div>
+            </div>
+            <div>
+              <div class="txn-amount" style="color:var(--green)">+₹62,000</div>
+              <div class="txn-account">HDFC</div>
+            </div>
+          </div>
+
+          <div class="txn-item">
+            <div class="txn-icon" style="background:rgba(108,99,255,0.12)">📈</div>
+            <div class="txn-info">
+              <div class="txn-name">SIP — Zerodha</div>
+              <div class="txn-meta">Investment · Mar 5</div>
+            </div>
+            <div>
+              <div class="txn-amount" style="color:var(--red)">−₹5,000</div>
+              <div class="txn-account">HDFC</div>
+            </div>
+          </div>
+
+          <div class="txn-item">
+            <div class="txn-icon" style="background:rgba(251,191,36,0.12)">⚡</div>
+            <div class="txn-info">
+              <div class="txn-name">Electricity Bill</div>
+              <div class="txn-meta">Utilities · Mar 4</div>
+            </div>
+            <div>
+              <div class="txn-amount" style="color:var(--red)">−₹1,340</div>
+              <div class="txn-account">UPI</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav" id="nav-home">
+        <div class="nav-item active" onclick="switchTab('home')">
+          <div class="nav-icon">🏠</div>
+          <div class="nav-label">Home</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('transactions')">
+          <div class="nav-icon">💸</div>
+          <div class="nav-label">Transactions</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('analytics')">
+          <div class="nav-icon">📊</div>
+          <div class="nav-label">Analytics</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('chat')">
+          <div class="nav-icon">🤖</div>
+          <div class="nav-label">AI Chat</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('accounts')">
+          <div class="nav-icon">🏦</div>
+          <div class="nav-label">Accounts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS SCREEN -->
+    <div class="screen" id="screen-transactions">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>▲▲▲</span><span>🔋</span></div>
+      </div>
+
+      <div class="screen-header">
+        <h2>Transactions</h2>
+        <div class="icon-btn">🔍</div>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-chip active">All</div>
+        <div class="filter-chip" onclick="this.closest('.filter-row').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Income</div>
+        <div class="filter-chip" onclick="this.closest('.filter-row').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Expense</div>
+        <div class="filter-chip" onclick="this.closest('.filter-row').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Food</div>
+        <div class="filter-chip" onclick="this.closest('.filter-row').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Transport</div>
+      </div>
+
+      <div class="scroll-content" style="padding:0 20px">
+        <div class="txn-group-header">
+          <div class="txn-group-date">Today · Mar 10</div>
+          <div class="txn-group-total" style="color:var(--red)">−₹1,280</div>
+        </div>
+        <div class="txn-item">
+          <div class="txn-icon" style="background:rgba(248,113,113,0.12)">🍕</div>
+          <div class="txn-info"><div class="txn-name">Zomato Order</div><div class="txn-meta">Food & Dining · 1:32 PM</div></div>
+          <div><div class="txn-amount" style="color:var(--red)">−₹480</div><div class="txn-account">HDFC</div></div>
+        </div>
+        <div class="txn-item">
+          <div class="txn-icon" style="background:rgba(52,211,153,0.12)">☕</div>
+          <div class="txn-info"><div class="txn-name">Blue Tokai Coffee</div><div class="txn-meta">Food & Dining · 9:15 AM</div></div>
+          <div><div class="txn-amount" style="color:var(--red)">−₹320</div><div class="txn-account">GPay</div></div>
+        </div>
+        <div class="txn-item">
+          <div class="txn-icon" style="background:rgba(52,211,153,0.12)">🚕</div>
+          <div class="txn-info"><div class="txn-name">Ola Cab</div><div class="txn-meta">Transport · 8:30 AM</div></div>
+          <div><div class="txn-amount" style="color:var(--red)">−₹280</div><div class="txn-account">Paytm</div></div>
+        </div>
+        <div class="txn-item">
+          <div class="txn-icon" style="background:rgba(52,211,153,0.12)">💳</div>
+          <div class="txn-info"><div class="txn-name">Amazon Grocery</div><div class="txn-meta">Grocery · 7:00 AM</div></div>
+          <div><div class="txn-amount" style="color:var(--red)">−₹200</div><div class="txn-account">SBI CC</div></div>
+        </div>
+
+        <div class="txn-group-header" style="margin-top:12px">
+          <div class="txn-group-date">Yesterday · Mar 9</div>
+          <div class="txn-group-total" style="color:var(--green)">+₹60,720</div>
+        </div>
+        <div class="txn-item">
+          <div class="txn-icon" style="background:rgba(52,211,153,0.12)">💰</div>
+          <div class="txn-info"><div class="txn-name">Freelance — UI Design</div><div class="txn-meta">Income · 6:00 PM</div></div>
+          <div><div class="txn-amount" style="color:var(--green)">+₹15,000</div><div class="txn-account">HDFC</div></div>
+        </div>
+        <div class="txn-item">
+          <div class="txn-icon" style="background:rgba(248,113,113,0.12)">🏥</div>
+          <div class="txn-info"><div class="txn-name">Apollo Pharmacy</div><div class="txn-meta">Health · 3:20 PM</div></div>
+          <div><div class="txn-amount" style="color:var(--red)">−₹1,280</div><div class="txn-account">SBI CC</div></div>
+        </div>
+        <div class="txn-item">
+          <div class="txn-icon" style="background:rgba(108,99,255,0.12)">📱</div>
+          <div class="txn-info"><div class="txn-name">Jio Fiber Bill</div><div class="txn-meta">Utilities · 11:00 AM</div></div>
+          <div><div class="txn-amount" style="color:var(--red)">−₹999</div><div class="txn-account">GPay</div></div>
+        </div>
+      </div>
+
+      <div class="fab" onclick="openModal()">+</div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="switchTab('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+        <div class="nav-item active" onclick="switchTab('transactions')"><div class="nav-icon">💸</div><div class="nav-label">Transactions</div></div>
+        <div class="nav-item" onclick="switchTab('analytics')"><div class="nav-icon">📊</div><div class="nav-label">Analytics</div></div>
+        <div class="nav-item" onclick="switchTab('chat')"><div class="nav-icon">🤖</div><div class="nav-label">AI Chat</div></div>
+        <div class="nav-item" onclick="switchTab('accounts')"><div class="nav-icon">🏦</div><div class="nav-label">Accounts</div></div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS SCREEN -->
+    <div class="screen" id="screen-analytics">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>▲▲▲</span><span>🔋</span></div>
+      </div>
+
+      <div class="screen-header">
+        <h2>Analytics</h2>
+        <div class="icon-btn">📅</div>
+      </div>
+
+      <div class="analytics-tabs">
+        <div class="tab-btn active" onclick="switchAnalyticsTab(this,'overview')">Overview</div>
+        <div class="tab-btn" onclick="switchAnalyticsTab(this,'categories')">Categories</div>
+        <div class="tab-btn" onclick="switchAnalyticsTab(this,'budgets')">Budgets</div>
+      </div>
+
+      <div class="scroll-content">
+        <!-- Stats row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card-label">Income</div>
+            <div class="stat-card-value" style="color:var(--green)">₹62K</div>
+            <div class="stat-card-sub">↑ 8% vs Feb</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Expenses</div>
+            <div class="stat-card-value" style="color:var(--red)">₹28.4K</div>
+            <div class="stat-card-sub">↑ 3% vs Feb</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Saved</div>
+            <div class="stat-card-value" style="color:var(--accent2)">₹33.6K</div>
+            <div class="stat-card-sub">54% rate 🎉</div>
+          </div>
+        </div>
+
+        <!-- Bar chart -->
+        <div class="chart-container">
+          <div class="chart-title">Income vs Expenses</div>
+          <div class="chart-subtitle">Last 6 months</div>
+
+          <div class="bar-chart" id="barChart"></div>
+
+          <div style="display:flex; justify-content:space-between; padding:0 2px">
+            <span style="font-size:9px;color:var(--text3)">Oct</span>
+            <span style="font-size:9px;color:var(--text3)">Nov</span>
+            <span style="font-size:9px;color:var(--text3)">Dec</span>
+            <span style="font-size:9px;color:var(--text3)">Jan</span>
+            <span style="font-size:9px;color:var(--text3)">Feb</span>
+            <span style="font-size:9px;color:var(--text3)">Mar</span>
+          </div>
+
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--green)"></div>Income
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--accent)"></div>Expenses
+            </div>
+          </div>
+        </div>
+
+        <!-- Donut chart -->
+        <div class="chart-container">
+          <div class="chart-title">Expense Breakdown</div>
+          <div class="chart-subtitle">March 2026</div>
+
+          <div class="donut-wrap">
+            <div class="donut-svg-wrap">
+              <svg width="110" height="110" viewBox="0 0 110 110">
+                <!-- Donut segments drawn as stroke-dasharray circles -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="var(--surface3)" stroke-width="18"/>
+                <!-- Food: 27% -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#f87171" stroke-width="18"
+                  stroke-dasharray="67.9 251.3" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+                <!-- Rent: 35% -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#a78bfa" stroke-width="18"
+                  stroke-dasharray="87.9 251.3" stroke-dashoffset="-67.9" transform="rotate(-90 55 55)"/>
+                <!-- SIP: 18% -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#34d399" stroke-width="18"
+                  stroke-dasharray="45.2 251.3" stroke-dashoffset="-155.8" transform="rotate(-90 55 55)"/>
+                <!-- Transport: 8% -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#fbbf24" stroke-width="18"
+                  stroke-dasharray="20.1 251.3" stroke-dashoffset="-201" transform="rotate(-90 55 55)"/>
+                <!-- Other: 12% -->
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#6c63ff" stroke-width="18"
+                  stroke-dasharray="30.2 251.3" stroke-dashoffset="-221.1" transform="rotate(-90 55 55)"/>
+              </svg>
+              <div class="donut-center">
+                <div class="donut-center-amount">₹28.4K</div>
+                <div class="donut-center-label">Total</div>
+              </div>
+            </div>
+
+            <div class="donut-legend">
+              <div class="donut-legend-item">
+                <div class="donut-legend-label"><div class="donut-legend-color" style="background:#f87171"></div>Food</div>
+                <div><span class="donut-legend-amount">₹7,800</span><span class="donut-legend-pct">27%</span></div>
+              </div>
+              <div class="donut-legend-item">
+                <div class="donut-legend-label"><div class="donut-legend-color" style="background:#a78bfa"></div>Rent</div>
+                <div><span class="donut-legend-amount">₹10,000</span><span class="donut-legend-pct">35%</span></div>
+              </div>
+              <div class="donut-legend-item">
+                <div class="donut-legend-label"><div class="donut-legend-color" style="background:#34d399"></div>SIP</div>
+                <div><span class="donut-legend-amount">₹5,000</span><span class="donut-legend-pct">18%</span></div>
+              </div>
+              <div class="donut-legend-item">
+                <div class="donut-legend-label"><div class="donut-legend-color" style="background:#fbbf24"></div>Transport</div>
+                <div><span class="donut-legend-amount">₹2,350</span><span class="donut-legend-pct">8%</span></div>
+              </div>
+              <div class="donut-legend-item">
+                <div class="donut-legend-label"><div class="donut-legend-color" style="background:#6c63ff"></div>Other</div>
+                <div><span class="donut-legend-amount">₹3,300</span><span class="donut-legend-pct">12%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Budgets progress -->
+        <div style="padding:0 20px 20px">
+          <div class="section-label" style="padding:0; margin-bottom:12px">Budget Status · March</div>
+
+          <div class="budget-card">
+            <div class="budget-card-top">
+              <div class="budget-cat"><div class="cat-emoji" style="background:rgba(248,113,113,0.15)">🍕</div><div class="cat-name">Food & Dining</div></div>
+              <div class="budget-amounts"><div class="spent-amount" style="color:var(--amber)">₹7,800</div><div class="limit-amount">of ₹10,000</div></div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:78%; background:linear-gradient(90deg, var(--amber), #f59e0b)"></div></div>
+          </div>
+
+          <div class="budget-card">
+            <div class="budget-card-top">
+              <div class="budget-cat"><div class="cat-emoji" style="background:rgba(167,139,250,0.15)">🏠</div><div class="cat-name">Rent</div></div>
+              <div class="budget-amounts"><div class="spent-amount" style="color:var(--green)">₹10,000</div><div class="limit-amount">of ₹10,000</div></div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%; background:linear-gradient(90deg, var(--accent2), #7c3aed)"></div></div>
+          </div>
+
+          <div class="budget-card">
+            <div class="budget-card-top">
+              <div class="budget-cat"><div class="cat-emoji" style="background:rgba(248,113,113,0.15)">🏥</div><div class="cat-name">Health</div></div>
+              <div class="budget-amounts"><div class="spent-amount" style="color:var(--red)">₹2,650</div><div class="limit-amount">of ₹2,500</div></div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%; background:linear-gradient(90deg, var(--red), #dc2626)"></div></div>
+          </div>
+
+          <div class="budget-card">
+            <div class="budget-card-top">
+              <div class="budget-cat"><div class="cat-emoji" style="background:rgba(52,211,153,0.15)">🚇</div><div class="cat-name">Transport</div></div>
+              <div class="budget-amounts"><div class="spent-amount" style="color:var(--green)">₹1,200</div><div class="limit-amount">of ₹3,000</div></div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:40%; background:linear-gradient(90deg, var(--green), #059669)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="switchTab('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+        <div class="nav-item" onclick="switchTab('transactions')"><div class="nav-icon">💸</div><div class="nav-label">Transactions</div></div>
+        <div class="nav-item active" onclick="switchTab('analytics')"><div class="nav-icon">📊</div><div class="nav-label">Analytics</div></div>
+        <div class="nav-item" onclick="switchTab('chat')"><div class="nav-icon">🤖</div><div class="nav-label">AI Chat</div></div>
+        <div class="nav-item" onclick="switchTab('accounts')"><div class="nav-icon">🏦</div><div class="nav-label">Accounts</div></div>
+      </div>
+    </div>
+
+    <!-- AI CHAT SCREEN -->
+    <div class="screen" id="screen-chat">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>▲▲▲</span><span>🔋</span></div>
+      </div>
+
+      <div class="chat-header">
+        <div class="chat-avatar">🤖<div class="online-dot"></div></div>
+        <div class="chat-info">
+          <h3>Budget AI</h3>
+          <small>● Online · Powered by Anthropic</small>
+        </div>
+        <div class="icon-btn" style="margin-left:auto">⋯</div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg ai">
+          <div class="msg-bubble">
+            Hey Arjun! 👋 I have full access to your financial data. Ask me anything — spending patterns, budget advice, SIP analysis, or I can create a budget plan from your last 3 months of data.
+          </div>
+          <div class="msg-time">9:30 AM</div>
+        </div>
+
+        <div class="msg user">
+          <div class="msg-bubble">How much did I spend on food this month vs last month?</div>
+          <div class="msg-time">9:32 AM</div>
+        </div>
+
+        <div class="msg ai">
+          <div class="msg-bubble">
+            Here's your food spending comparison:
+            <div class="ai-data-card">
+              <div class="data-row"><span>🍕 March (so far)</span><span style="color:var(--amber)">₹7,800</span></div>
+              <div class="data-row"><span>🍕 February</span><span style="color:var(--text2)">₹6,230</span></div>
+              <div class="data-row" style="border-top:1px solid var(--border); margin-top:4px; padding-top:8px">
+                <span>Difference</span><span style="color:var(--red)">+₹1,570 ↑ 25%</span>
+              </div>
+            </div>
+            You're spending significantly more this month, and it's only the 10th. At this pace, you'll exceed your ₹10,000 budget by ~₹1,200. Want me to suggest where to cut back? 🎯
+          </div>
+          <div class="msg-time">9:32 AM</div>
+        </div>
+
+        <div class="msg user">
+          <div class="msg-bubble">Can I safely increase my SIP by ₹1,500?</div>
+          <div class="msg-time">9:35 AM</div>
+        </div>
+
+        <div class="msg ai" id="lastAiMsg">
+          <div class="msg-bubble">
+            Based on your 3-month average data:
+            <div class="ai-data-card">
+              <div class="data-row"><span>Avg monthly income</span><span style="color:var(--green)">₹58,500</span></div>
+              <div class="data-row"><span>Avg monthly expenses</span><span style="color:var(--red)">₹27,200</span></div>
+              <div class="data-row"><span>Current SIP</span><span>₹5,000</span></div>
+              <div class="data-row"><span>Monthly surplus</span><span style="color:var(--green)">₹31,300</span></div>
+              <div class="data-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px">
+                <span>New SIP (₹6,500)</span><span style="color:var(--green)">✅ Comfortable</span>
+              </div>
+            </div>
+            Yes! Increasing by ₹1,500 is very safe. Your surplus is ₹31,300 and this would only add 4.8% to your committed expenses. Shall I update your recurring SIP rule? 🚀
+          </div>
+          <div class="msg-time">9:36 AM</div>
+        </div>
+      </div>
+
+      <div class="suggest-chips">
+        <div class="chip" onclick="sendChip(this)">📊 50/30/20 budget</div>
+        <div class="chip" onclick="sendChip(this)">🎯 Emergency fund plan</div>
+        <div class="chip" onclick="sendChip(this)">📈 Investment advice</div>
+        <div class="chip" onclick="sendChip(this)">💳 Credit card summary</div>
+        <div class="chip" onclick="sendChip(this)">🔮 Next month forecast</div>
+      </div>
+
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chatInput" placeholder="Ask about your finances..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+        <button class="send-btn" onclick="sendChat()">➤</button>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="switchTab('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+        <div class="nav-item" onclick="switchTab('transactions')"><div class="nav-icon">💸</div><div class="nav-label">Transactions</div></div>
+        <div class="nav-item" onclick="switchTab('analytics')"><div class="nav-icon">📊</div><div class="nav-label">Analytics</div></div>
+        <div class="nav-item active" onclick="switchTab('chat')"><div class="nav-icon">🤖</div><div class="nav-label">AI Chat</div></div>
+        <div class="nav-item" onclick="switchTab('accounts')"><div class="nav-icon">🏦</div><div class="nav-label">Accounts</div></div>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS SCREEN -->
+    <div class="screen" id="screen-accounts">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons"><span>▲▲▲</span><span>🔋</span></div>
+      </div>
+
+      <div class="screen-header">
+        <h2>Accounts</h2>
+        <div class="icon-btn">+</div>
+      </div>
+
+      <div class="scroll-content">
+        <div style="margin: 0 20px 16px; padding: 14px; background: var(--surface2); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+          <div style="font-size:11px; color:var(--text3); margin-bottom:4px">Net Worth</div>
+          <div style="font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--green)">₹3,82,340</div>
+          <div style="font-size:11px; color:var(--text3)">↑ ₹33,600 this month</div>
+        </div>
+
+        <div style="padding:0 20px; margin-bottom:8px">
+          <div class="section-label" style="padding:0; margin-bottom:10px">Bank Accounts</div>
+        </div>
+
+        <div class="account-card">
+          <div class="account-icon" style="background:rgba(52,211,153,0.12)">🏦</div>
+          <div class="account-details">
+            <div class="account-name">HDFC Savings</div>
+            <div class="account-type">Savings · ••••4521</div>
+          </div>
+          <div class="account-balance">
+            <div class="account-balance-amount" style="color:var(--green)">₹62,340</div>
+            <div class="account-balance-label">Available</div>
+          </div>
+        </div>
+
+        <div class="account-card">
+          <div class="account-icon" style="background:rgba(108,99,255,0.12)">🏦</div>
+          <div class="account-details">
+            <div class="account-name">SBI Account</div>
+            <div class="account-type">Savings · ••••8832</div>
+          </div>
+          <div class="account-balance">
+            <div class="account-balance-amount">₹18,200</div>
+            <div class="account-balance-label">Available</div>
+          </div>
+        </div>
+
+        <div style="padding:0 20px; margin:16px 0 8px">
+          <div class="section-label" style="padding:0; margin-bottom:10px">Wallets & UPI</div>
+        </div>
+
+        <div class="account-card">
+          <div class="account-icon" style="background:rgba(251,191,36,0.12)">📱</div>
+          <div class="account-details">
+            <div class="account-name">GPay / PhonePe</div>
+            <div class="account-type">UPI Wallet</div>
+          </div>
+          <div class="account-balance">
+            <div class="account-balance-amount">₹4,800</div>
+            <div class="account-balance-label">Balance</div>
+          </div>
+        </div>
+
+        <div class="account-card">
+          <div class="account-icon" style="background:rgba(248,113,113,0.12)">💵</div>
+          <div class="account-details">
+            <div class="account-name">Cash</div>
+            <div class="account-type">Physical Cash</div>
+          </div>
+          <div class="account-balance">
+            <div class="account-balance-amount">₹2,000</div>
+            <div class="account-balance-label">On hand</div>
+          </div>
+        </div>
+
+        <div style="padding:0 20px; margin:16px 0 8px">
+          <div class="section-label" style="padding:0; margin-bottom:10px">Credit Cards</div>
+        </div>
+
+        <div class="account-card">
+          <div class="account-icon" style="background:rgba(167,139,250,0.12)">💳</div>
+          <div class="account-details">
+            <div class="account-name">SBI SimplySAVE</div>
+            <div class="account-type">Credit · ••••1234</div>
+          </div>
+          <div class="account-balance">
+            <div class="account-balance-amount" style="color:var(--red)">−₹5,000</div>
+            <div class="account-balance-label">Outstanding</div>
+          </div>
+        </div>
+
+        <div style="padding:0 20px; margin:16px 0 8px">
+          <div class="section-label" style="padding:0; margin-bottom:10px">Recurring Items</div>
+        </div>
+
+        <div class="recurring-card">
+          <div class="recurring-icon" style="background:rgba(52,211,153,0.12)">📈</div>
+          <div class="recurring-info">
+            <div class="recurring-name">SIP — Zerodha</div>
+            <div class="recurring-freq">Monthly · 5th of each month</div>
+          </div>
+          <div>
+            <div class="recurring-amount" style="color:var(--red)">₹5,000</div>
+            <div class="recurring-next">Next: Apr 5</div>
+          </div>
+        </div>
+
+        <div class="recurring-card">
+          <div class="recurring-icon" style="background:rgba(167,139,250,0.12)">🏠</div>
+          <div class="recurring-info">
+            <div class="recurring-name">House Rent</div>
+            <div class="recurring-freq">Monthly · 1st of each month</div>
+          </div>
+          <div>
+            <div class="recurring-amount" style="color:var(--red)">₹10,000</div>
+            <div class="recurring-next">Next: Apr 1</div>
+          </div>
+        </div>
+
+        <div class="recurring-card">
+          <div class="recurring-icon" style="background:rgba(108,99,255,0.12)">📱</div>
+          <div class="recurring-info">
+            <div class="recurring-name">Jio Fiber</div>
+            <div class="recurring-freq">Monthly · 9th of each month</div>
+          </div>
+          <div>
+            <div class="recurring-amount" style="color:var(--red)">₹999</div>
+            <div class="recurring-next">Next: Apr 9</div>
+          </div>
+        </div>
+
+        <div style="padding-bottom:20px"></div>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="switchTab('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+        <div class="nav-item" onclick="switchTab('transactions')"><div class="nav-icon">💸</div><div class="nav-label">Transactions</div></div>
+        <div class="nav-item" onclick="switchTab('analytics')"><div class="nav-icon">📊</div><div class="nav-label">Analytics</div></div>
+        <div class="nav-item" onclick="switchTab('chat')"><div class="nav-icon">🤖</div><div class="nav-label">AI Chat</div></div>
+        <div class="nav-item active" onclick="switchTab('accounts')"><div class="nav-icon">🏦</div><div class="nav-label">Accounts</div></div>
+      </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div class="modal-overlay" id="addModal" onclick="if(event.target===this)closeModal()">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Add Transaction</div>
+
+        <div class="type-toggle">
+          <div class="type-btn expense active" id="expenseBtn" onclick="setType('expense')">Expense</div>
+          <div class="type-btn income" id="incomeBtn" onclick="setType('income')">Income</div>
+          <div class="type-btn" id="transferBtn" onclick="setType('transfer')" style="color:var(--text2)">Transfer</div>
+        </div>
+
+        <div class="amount-input-wrap">
+          <div class="amount-currency">₹</div>
+          <input type="number" class="amount-input" placeholder="0" id="amountInput">
+        </div>
+
+        <input type="text" class="form-input" placeholder="Description (e.g., Zomato Order)">
+
+        <div class="form-row">
+          <select class="form-input" style="flex:1">
+            <option>🍕 Food & Dining</option>
+            <option>🏠 Rent</option>
+            <option>🚇 Transport</option>
+            <option>🏥 Health</option>
+            <option>📈 Investment</option>
+            <option>⚡ Utilities</option>
+            <option>🎯 Entertainment</option>
+          </select>
+          <select class="form-input" style="flex:1">
+            <option>HDFC Savings</option>
+            <option>SBI Account</option>
+            <option>GPay / UPI</option>
+            <option>Cash</option>
+            <option>SBI Credit</option>
+          </select>
+        </div>
+
+        <input type="date" class="form-input" value="2026-03-10">
+        <input type="text" class="form-input" placeholder="Note (optional)">
+
+        <button class="primary-btn" onclick="addTransaction()">Save Transaction</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Build bar chart
+const months = [
+  { income: 52000, expense: 22000 },
+  { income: 55000, expense: 26000 },
+  { income: 47000, expense: 31000 },
+  { income: 60000, expense: 25000 },
+  { income: 58000, expense: 27000 },
+  { income: 62000, expense: 28450 },
+];
+
+const maxVal = Math.max(...months.flatMap(m => [m.income, m.expense]));
+const barChart = document.getElementById('barChart');
+
+months.forEach(m => {
+  const grp = document.createElement('div');
+  grp.className = 'bar-group';
+
+  const pair = document.createElement('div');
+  pair.className = 'bar-pair';
+
+  const ib = document.createElement('div');
+  ib.className = 'bar income';
+  ib.style.height = (m.income / maxVal * 95) + 'px';
+
+  const eb = document.createElement('div');
+  eb.className = 'bar expense';
+  eb.style.height = (m.expense / maxVal * 95) + 'px';
+
+  pair.appendChild(ib);
+  pair.appendChild(eb);
+  grp.appendChild(pair);
+  barChart.appendChild(grp);
+});
+
+// Tab switching
+function switchTab(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+}
+
+function switchAnalyticsTab(el, tab) {
+  el.closest('.analytics-tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Modal
+function openModal() {
+  document.getElementById('addModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('addModal').classList.remove('active');
+}
+
+function setType(type) {
+  ['expense','income','transfer'].forEach(t => {
+    const btn = document.getElementById(t + 'Btn');
+    btn.classList.remove('active');
+  });
+  document.getElementById(type + 'Btn').classList.add('active');
+}
+
+function addTransaction() {
+  closeModal();
+}
+
+// AI Chat
+const aiResponses = {
+  '50/30/20 budget': `Based on your avg income of ₹58,500, here's your 50/30/20 plan:\n\n<card>
+    <row>🏠 Needs (50%)|₹29,250</row>
+    <row>🎯 Wants (30%)|₹17,550</row>
+    <row>💰 Savings (20%)|₹11,700</row>
+    <row>Current savings rate|54% 🎉</row>
+  </card>\n\nYou're already saving 54% — well above the 20% target! Your needs are within limits. Shall I create these as budget categories?`,
+  'Emergency fund plan': `Your current setup:\n\n<card>
+    <row>Monthly expenses avg|₹27,200</row>
+    <row>Target (6 months)|₹1,63,200</row>
+    <row>Current liquid assets|₹84,540</row>
+    <row>Remaining to save|₹78,660</row>
+  </card>\n\nAt ₹10K/month savings, you'll reach your emergency fund in ~8 months. Want me to set up a goal tracker for this?`,
+  default: `I've analyzed your financial data. Here's what I found based on your last 3 months of transactions:\n\n<card>
+    <row>Avg Income|₹58,500</row>
+    <row>Avg Expenses|₹27,200</row>
+    <row>Savings Rate|54%</row>
+  </card>\n\nIs there something specific you'd like to explore? I can help with budgets, SIP advice, or spending analysis! 📊`
+};
+
+function sendChip(el) {
+  const text = el.textContent.replace(/^[^\s]+\s/, '');
+  sendMessage(text);
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChat();
+  }
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  sendMessage(text);
+}
+
+function sendMessage(text) {
+  const container = document.getElementById('chatMessages');
+
+  // User message
+  const userMsg = document.createElement('div');
+  userMsg.className = 'msg user';
+  userMsg.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">Just now</div>`;
+  container.appendChild(userMsg);
+
+  // Typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'msg ai';
+  typing.innerHTML = `<div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  container.appendChild(typing);
+  container.scrollTop = container.scrollHeight;
+
+  setTimeout(() => {
+    typing.remove();
+
+    // AI response
+    let responseText = aiResponses.default;
+    for (const key in aiResponses) {
+      if (text.toLowerCase().includes(key.toLowerCase())) {
+        responseText = aiResponses[key];
+        break;
+      }
+    }
+
+    // Parse card format
+    let html = responseText.replace(/<card>([\s\S]*?)<\/card>/g, (match, inner) => {
+      const rows = inner.trim().split('\n').map(r => r.trim()).filter(r => r.startsWith('<row>'));
+      const rowsHtml = rows.map(r => {
+        const [label, val] = r.replace('<row>', '').replace('</row>', '').split('|');
+        return `<div class="data-row"><span>${label}</span><span>${val || ''}</span></div>`;
+      }).join('');
+      return `<div class="ai-data-card">${rowsHtml}</div>`;
+    });
+
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'msg ai';
+    aiMsg.innerHTML = `<div class="msg-bubble">${html}</div><div class="msg-time">Just now</div>`;
+    container.appendChild(aiMsg);
+    container.scrollTop = container.scrollHeight;
+  }, 1500);
+}
+</script>
+</body>
+</html>

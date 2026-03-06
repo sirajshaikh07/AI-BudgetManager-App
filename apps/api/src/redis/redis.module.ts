@@ -1,4 +1,4 @@
-import { Module, Global } from '@nestjs/common';
+import { Module, Global, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { AppConfig } from '../config/configuration';
@@ -11,19 +11,27 @@ import { REDIS_CLIENT } from './redis.constants';
         {
             provide: REDIS_CLIENT,
             inject: [ConfigService],
-            useFactory: (config: ConfigService<AppConfig, true>): Redis => {
+            useFactory: (config: ConfigService<AppConfig, true>): Redis | null => {
                 const redisUrl = config.get('redis.url', { infer: true });
+                const logger = new Logger('RedisModule');
+
+                // If no REDIS_URL is set, skip connecting (development without Redis)
+                if (!redisUrl) {
+                    logger.warn('REDIS_URL not set — Redis is disabled. Set REDIS_URL to enable caching.');
+                    return null;
+                }
+
                 const client = new Redis(redisUrl, {
                     maxRetriesPerRequest: 3,
                     lazyConnect: false,
                 });
 
                 client.on('error', (err: Error) => {
-                    console.error('[Redis] Connection error:', err.message);
+                    logger.error(`Connection error: ${err.message}`);
                 });
 
                 client.on('connect', () => {
-                    console.log('[Redis] Connected successfully');
+                    logger.log('Connected successfully');
                 });
 
                 return client;

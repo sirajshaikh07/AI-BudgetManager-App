@@ -14,6 +14,9 @@ import { AppConfig } from '../config/configuration';
                 autoLoadEntities: true,
                 synchronize: false,
                 logging: process.env['NODE_ENV'] === 'development',
+                ssl: {
+                    rejectUnauthorized: false,
+                },
                 extra: {
                     max: 20,
                 },

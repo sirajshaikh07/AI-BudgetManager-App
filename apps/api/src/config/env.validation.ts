@@ -8,9 +8,14 @@ export const envValidationSchema = Joi.object({
     PORT: Joi.number().default(3000),
 
     // ── Required to boot ─────────────────────────────────────────────────
-    // Must be valid Postgres/Redis URIs so the DB/cache modules connect
     DATABASE_URL: Joi.string().uri().required(),
-    REDIS_URL: Joi.string().uri().required(),
+
+    // Redis — optional in development, required in production
+    REDIS_URL: Joi.when('NODE_ENV', {
+        is: 'production',
+        then: Joi.string().uri().required(),
+        otherwise: Joi.string().uri().optional().default(''),
+    }),
 
     // JWT RS256 PEM keys stored as single-line strings (\n = newline)
     JWT_SECRET_PRIVATE_KEY: Joi.string().min(1).required(),

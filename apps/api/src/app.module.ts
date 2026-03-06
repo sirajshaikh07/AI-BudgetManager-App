@@ -4,6 +4,10 @@ import configuration from './config/configuration';
 import { envValidationSchema } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { RedisModule } from './redis/redis.module';
+import { AuthModule } from './auth/auth.module';
+import { AccountsModule } from './accounts/accounts.module';
+import { CategoriesModule } from './categories/categories.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
     imports: [
@@ -21,8 +25,15 @@ import { RedisModule } from './redis/redis.module';
         // Infrastructure
         DatabaseModule,
         RedisModule,
+
+        // Phase 1 — Feature modules
+        AuthModule,
+        AccountsModule,
+        CategoriesModule,
+        TransactionsModule,
     ],
     controllers: [],
     providers: [],
 })
 export class AppModule { }
+

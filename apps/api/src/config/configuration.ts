@@ -4,7 +4,7 @@ export interface AppConfig {
         url: string;
     };
     redis: {
-        url: string;
+        url: string | null;   // null = Redis disabled (no REDIS_URL set)
     };
     jwt: {
         privateKey: string;
@@ -33,7 +33,7 @@ export default (): AppConfig => ({
         url: process.env['DATABASE_URL'] ?? '',
     },
     redis: {
-        url: process.env['REDIS_URL'] ?? '',
+        url: process.env['REDIS_URL'] || null,
     },
     jwt: {
         privateKey: (process.env['JWT_SECRET_PRIVATE_KEY'] ?? '').replace(

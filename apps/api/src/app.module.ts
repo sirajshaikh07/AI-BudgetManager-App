@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { CategoriesModule } from './categories/categories.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { HealthController } from './health.controller';
 
 @Module({
     imports: [
@@ -32,7 +33,7 @@ import { TransactionsModule } from './transactions/transactions.module';
         CategoriesModule,
         TransactionsModule,
     ],
-    controllers: [],
+    controllers: [HealthController],
     providers: [],
 })
 export class AppModule { }

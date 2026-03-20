@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
-import { RegisterDto, LoginDto, RefreshTokenDto } from './dto';
+import { RegisterDto, LoginDto, RefreshTokenDto, UpdateProfileDto } from './dto';
 import { AppConfig } from '../config/configuration';
 import { randomBytes } from 'crypto';
 
@@ -134,6 +134,26 @@ export class AuthService {
         }
 
         return this.sanitizeUser(user);
+    }
+
+    async updateProfile(userId: string, dto: UpdateProfileDto): Promise<Omit<User, 'passwordHash'>> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+        });
+
+        if (!user) {
+            throw new UnauthorizedException('User not found');
+        }
+
+        if (dto.fullName !== undefined) user.fullName = dto.fullName;
+        if (dto.phone !== undefined) user.phone = dto.phone;
+        if (dto.currency !== undefined) user.currency = dto.currency;
+        if (dto.country !== undefined) user.country = dto.country;
+        if (dto.avatarUrl !== undefined) user.avatarUrl = dto.avatarUrl;
+
+        const updated = await this.userRepository.save(user);
+        this.logger.log(`Profile updated for user: ${userId}`);
+        return this.sanitizeUser(updated);
     }
 
     async validateAccessToken(token: string): Promise<TokenPayload> {

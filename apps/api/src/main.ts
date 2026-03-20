@@ -17,8 +17,8 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  // API versioning prefix
-  app.setGlobalPrefix('api/v1');
+  // API versioning prefix — exclude /health so it stays at root level
+  app.setGlobalPrefix('api/v1', { exclude: ['health'] });
 
   // CORS — tighten in production
   app.enableCors({

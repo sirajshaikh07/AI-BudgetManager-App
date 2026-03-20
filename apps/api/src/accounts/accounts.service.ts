@@ -97,4 +97,17 @@ export class AccountsService {
             .where('id = :id', { id: accountId })
             .execute();
     }
+
+    /**
+     * Get the total balance across all active accounts for a user.
+     */
+    async getTotalBalance(userId: string): Promise<{ totalBalance: string; currency: string; accountsCount: number }> {
+        const accounts = await this.findAll(userId);
+        const total = accounts.reduce((sum, acc) => sum + parseFloat(acc.currentBalance), 0);
+        return {
+            totalBalance: total.toFixed(2),
+            currency: accounts[0]?.currency ?? 'INR',
+            accountsCount: accounts.length,
+        };
+    }
 }

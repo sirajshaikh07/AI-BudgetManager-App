@@ -117,11 +117,72 @@ describe('AuthService', () => {
     });
 
     describe('refreshToken', () => {
+        // TC-AUTH-006: Refresh token success
+        it('TC-AUTH-006: should rotate refresh token and return new pair', async () => {
+            const userId = 'uuid-1';
+            const user = { id: userId, email: 'test@test.com', passwordHash: '$2b$12$hashed' } as User;
+            mockUserRepository.findOne.mockResolvedValue(user);
+
+            // bcrypt.compare cleared by beforeEach — restore it so login() works
+            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+            // First, login to get a token in the store
+            const loginResult = await service.login({ email: 'test@test.com', password: 'TestPass123' });
+            const oldToken = loginResult.tokens.refreshToken;
+
+            const result = await service.refreshToken({ refreshToken: oldToken });
+
+            expect(result.accessToken).toBe('mock-access-token');
+            expect(result.refreshToken).toBeDefined();
+            expect(result.refreshToken).not.toBe(oldToken);
+        });
+
         // TC-AUTH-007: Refresh token expired/invalid
         it('TC-AUTH-007: should throw UnauthorizedException for invalid refresh token', async () => {
             await expect(
                 service.refreshToken({ refreshToken: 'invalid-token' }),
             ).rejects.toThrow(UnauthorizedException);
+        });
+    });
+
+    describe('logout', () => {
+        it('should invalidate the refresh token', async () => {
+            // First, login to get a token
+            const user = { id: 'uuid-1', email: 'test@test.com', passwordHash: '$2b$12$hashed' } as User;
+            mockUserRepository.findOne.mockResolvedValue(user);
+            // bcrypt.compare cleared by beforeEach — restore it so login() works
+            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+            const loginResult = await service.login({ email: 'test@test.com', password: 'TestPass123' });
+            const token = loginResult.tokens.refreshToken;
+
+            await service.logout(token);
+
+            // Attempt to refresh should now fail
+            await expect(service.refreshToken({ refreshToken: token })).rejects.toThrow(UnauthorizedException);
+        });
+    });
+
+    describe('validateAccessToken', () => {
+        it('should return payload for valid access token', async () => {
+            const payload = { sub: 'uuid-1', email: 'test@test.com', type: 'access' };
+            mockJwtService.verify.mockReturnValue(payload);
+
+            const result = await service.validateAccessToken('valid-token');
+
+            expect(result).toEqual(payload);
+            expect(mockJwtService.verify).toHaveBeenCalled();
+        });
+
+        it('should throw for refresh token used as access token', async () => {
+            mockJwtService.verify.mockReturnValue({ type: 'refresh' });
+
+            await expect(service.validateAccessToken('refresh-token')).rejects.toThrow(UnauthorizedException);
+        });
+
+        it('should throw for invalid token', async () => {
+            mockJwtService.verify.mockImplementation(() => { throw new Error(); });
+
+            await expect(service.validateAccessToken('invalid')).rejects.toThrow(UnauthorizedException);
         });
     });
 

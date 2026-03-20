@@ -34,6 +34,11 @@ export class AccountsController {
         return this.accountsService.findAll(userId);
     }
 
+    @Get('total-balance')
+    async getTotalBalance(@CurrentUser('userId') userId: string): Promise<unknown> {
+        return this.accountsService.getTotalBalance(userId);
+    }
+
     @Get(':id')
     async findOne(
         @CurrentUser('userId') userId: string,
